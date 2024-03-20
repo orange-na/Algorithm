@@ -22,4 +22,5 @@ ans = 0
 for i, j in c:
     ans += is_distance_int(x[i], x[j])
 
+
 print(ans)
