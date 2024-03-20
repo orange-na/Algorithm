@@ -1,46 +1,25 @@
-# # Implements decorator to cache func
-# # from functools import lru_cache
-# import time
-import time
+import math
+from itertools import combinations
+n, d = map(int, input().split())
 
-def memorize(f):
-    cache = {}
-    def  _wrapper(n):
-        if n not in cache:
-            cache[n] = f(n)
-        return cache[n]
-    return _wrapper
+def is_distance_int(y, z):
+    ans = 0
+    for i, j in zip(y, z):
+        ans += (i-j)**2
+    for k in range(1, ans+1):
+        if k**2 == ans:
+            return 1
+    return 0
 
-@memorize
-def long_func(num: int) -> int:
-    r = 0
-    for i in range(10000000):
-        r += num * i
-    return r
+x = []
+for i in range(n):
+    x.append(list(map(int, input().split())))
 
-#     cache = {}
+c = [i for i in range(n)]
+c = combinations(c, 2)
 
-#     def _wrapper(n):
-#         if n not in cache:
-#             cache[n] = f(n)
-#         return cache[n]
-#     return _wrapper
+ans = 0
+for i, j in c:
+    ans += is_distance_int(x[i], x[j])
 
-
-# @memoize
-# def long_func(num: int) -> int:
-#     r = 0
-#     for i in range(10000000):
-#         r += num * i
-#     return r
-
-
-if __name__ == '__main__':
-    for i in range(10):
-        print(long_func(i))
-
-    start = time.time()
-    for i in range(10):
-        print(long_func(i))
-    print(time.time() - start)
-
+print(ans)
