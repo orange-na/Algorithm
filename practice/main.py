@@ -1,57 +1,44 @@
-""" Generate Prime Numbers
-Input: 50 => Output: [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47]
 """
-from typing import List, Generator
+Input  X: [1, 2, 3, 4, 4, 5, 5, 8, 10] Y: [4, 5, 5, 5, 6, 7, 8, 8, 10]
+  =>   X: [1, 2, 3, 4, 4, 10]          Y: [5, 5, 5, 6, 7, 8, 8, 10]
+"""
+from collections import Counter
+from typing import List, Tuple
 
 
-def generate_primes_v1(number: int) -> List[int]:
-    primes = []
-    for x in range(2, number + 1):
-        for y in range(2, x):
-            if x % y == 0:
-                break
-        else:
-            primes.append(x)
-    return primes
+def min_count_remove(x: List[int], y: List[int]) -> None:
+    # counter_x = {}
+    # counter_y = {}
+    # for i in x:
+    #     counter_x[i] = counter_x.get(i, 0) + 1
+    # for i in y:
+    #     counter_y[i] = counter_y.get(i, 0) + 1
+    counter_x = Counter(x)
+    counter_y = Counter(y)
 
-
-def generate_primes_v2(number: int) -> List[int]:
-    primes = []
-    cache = {}
-    for x in range(2, number + 1):
-        is_prime = cache.get(x)
-        if is_prime is False:
-            continue
-        primes.append(x)
-        cache[x] = True
-        for y in range(x*2, number+1, x):
-            cache[y] = False
-    return primes
-
-
-def generate_primes_v3(number: int) -> Generator[int, None, None]:
-    cache = {}
-    for x in range(2, number + 1):
-        is_prime = cache.get(x)
-        if is_prime is False:
-            continue
-        yield x
-        cache[x] = True
-        for y in range(x*2, number+1, x):
-            cache[y] = False
+    for key_x, value_x in counter_x.items():
+        value_y = counter_y.get(key_x)
+        if value_y:
+            if value_x < value_y:
+                x[:] = [i for i in x if i != key_x]
+            elif value_x > value_y:
+                y[:] = [i for i in y if i != key_x]
 
 
 if __name__ == '__main__':
-    import time
-    start = time.time()
-    print(generate_primes_v1(50))
-    print(time.time() - start)
+    x = [1, 2, 3, 4, 4, 5, 5, 8, 10]
+    y = [4, 5, 5, 5, 6, 7, 8, 8, 10]
+    print('x =', x)
+    print('y =', y)
+    min_count_remove(x, y)
+    print('x =', x)
+    print('y =', y)
 
-    start = time.time()
-    print(generate_primes_v2(50))
-    print(time.time() - start)
 
-    start = time.time()
-    print([i for i in generate_primes_v3(50)])
-    print(time.time() - start)
+
+
+
+
+
+
 
