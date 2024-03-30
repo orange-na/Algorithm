@@ -1,95 +1,38 @@
-import math
-
-
-def is_prime_v1(num: int) -> bool:
-    if num <= 1:
-        return False
-
-    for i in range(2, num):
-        if num % i == 0:
-            return False
-
-    return True
-
-
-def is_prime_v2(num: int) -> bool:
-    if num <= 1:
-        return False
-    i = 2
-    while i * i <= num:
-        if num % i == 0:
-            return False
-        i += 1
-
-    return True
-
-
-def is_prime_v3(num: int) -> bool:
-    if num <= 1:
-        return False
-
-    if num == 2:
-        return True
-
-    if num % 2 == 0:
-        return False
-
-    # for i in range(3, math.floor(math.sqrt(num) + 1), 2):
-    #     if num % i == 0:
-    #         return False
-
-    i = 3
-    while i * i <= num:
-        if num % i == 0:
-            return False
-        i += 2
-
-    return True
-
-
-def is_prime_v4(num: int) -> bool:
-    if num <= 1:
-        return False
-
-    if num <= 3:
-        return True
-
-    if num % 2 == 0 or num % 3 == 0:
-        return False
+from typing import List, Tuple
 
 
 
-    i = 5
-    while i * i <= num:
-        if num % i == 0 or num % (i+2) == 0:
-            return False
-        i += 6
+def hanoi(disk: int, src: str, dest: str, support: str):
+    if disk < 1:
+        return
 
-    return True
+    hanoi(disk-1, src, support, dest)
+    print(f'move {disk} from {src} to {dest}')
+    hanoi(disk-1, support, dest, src)
+
+
+
+def get_hanoi_movement(disk: int, src: str, dest: str, support: str) -> List[Tuple[int, str, str]]:
+    result = []
+
+    def _hanoi(disk: int, src: str, dest: str, support: str):
+        if disk < 1:
+            return
+
+        _hanoi(disk-1, src, support, dest)
+        result.append((disk, src, dest))
+        _hanoi(disk-1, support, dest, src)
+
+    _hanoi(disk, src, dest, support)
+    return result
+
+
+
 
 
 if __name__ == '__main__':
-    import time
-    import random
+    hanoi(3, 'A', 'C', 'B')
+    for r in get_hanoi_movement(4, 'A', 'C', 'B'):
+        print(r)
 
-    numbers = [random.randint(0, 1000) for _ in range(100000)]
 
-    start = time.time()
-    for num in numbers:
-        is_prime_v1(num)
-    print('v1', time.time() - start)
-
-    start = time.time()
-    for num in numbers:
-        is_prime_v2(num)
-    print('v2', time.time() - start)
-
-    start = time.time()
-    for num in numbers:
-        is_prime_v3(num)
-    print('v3', time.time() - start)
-
-    start = time.time()
-    for num in numbers:
-        is_prime_v4(num)
-    print('v4', time.time() - start)
