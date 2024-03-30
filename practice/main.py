@@ -1,38 +1,27 @@
-from typing import List, Tuple
+from typing import List
 
 
 
-def hanoi(disk: int, src: str, dest: str, support: str):
-    if disk < 1:
-        return
-
-    hanoi(disk-1, src, support, dest)
-    print(f'move {disk} from {src} to {dest}')
-    hanoi(disk-1, support, dest, src)
-
+def generate_pascal_triangle(depth: int) -> List[List[int]]:
+    data = [[1] * (i + 1) for i in range(depth)]
+    for line in range(2, depth):
+        for i in range(1, line):
+            data[line][i] = data[line-1][i-1] + data[line-1][i]
+    return data
 
 
-def get_hanoi_movement(disk: int, src: str, dest: str, support: str) -> List[Tuple[int, str, str]]:
-    result = []
 
-    def _hanoi(disk: int, src: str, dest: str, support: str):
-        if disk < 1:
-            return
 
-        _hanoi(disk-1, src, support, dest)
-        result.append((disk, src, dest))
-        _hanoi(disk-1, support, dest, src)
-
-    _hanoi(disk, src, dest, support)
-    return result
+def print_pascal(data: List[int]) -> None:
+    max_digit = len(str(max(data[-1])))
+    width = max_digit + (max_digit % 2) + 2
+    for index, line in enumerate(data):
+        numbers = ''.join([str(i).center(width, ' ') for i in line])
+        print((' ' * int(width/2)) * (len(data) - index), numbers)
 
 
 
 
 
 if __name__ == '__main__':
-    hanoi(3, 'A', 'C', 'B')
-    for r in get_hanoi_movement(4, 'A', 'C', 'B'):
-        print(r)
-
-
+    print_pascal(generate_pascal_triangle(10))
