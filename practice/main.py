@@ -1,44 +1,16 @@
-"""
-Input  X: [1, 2, 3, 4, 4, 5, 5, 8, 10] Y: [4, 5, 5, 5, 6, 7, 8, 8, 10]
-  =>   X: [1, 2, 3, 4, 4, 10]          Y: [5, 5, 5, 6, 7, 8, 8, 10]
-"""
-from collections import Counter
-from typing import List, Tuple
+import unittest
+
+from main import is_prime_v4 as is_prime
+from array import order_even_first_odd_last
 
 
-def min_count_remove(x: List[int], y: List[int]) -> None:
-    # counter_x = {}
-    # counter_y = {}
-    # for i in x:
-    #     counter_x[i] = counter_x.get(i, 0) + 1
-    # for i in y:
-    #     counter_y[i] = counter_y.get(i, 0) + 1
-    counter_x = Counter(x)
-    counter_y = Counter(y)
+class Test(unittest.TestCase):
 
-    for key_x, value_x in counter_x.items():
-        value_y = counter_y.get(key_x)
-        if value_y:
-            if value_x < value_y:
-                x[:] = [i for i in x if i != key_x]
-            elif value_x > value_y:
-                y[:] = [i for i in y if i != key_x]
+    def test_order_even_first_odd_last_ok(self):
+        l = [1, 3, 2, 4, 11, 29, 8]
+        order_even_first_odd_last(l)
+        self.assertListEqual(l, [8, 4, 2, 11, 29, 3, 1])
 
 
 if __name__ == '__main__':
-    x = [1, 2, 3, 4, 4, 5, 5, 8, 10]
-    y = [4, 5, 5, 5, 6, 7, 8, 8, 10]
-    print('x =', x)
-    print('y =', y)
-    min_count_remove(x, y)
-    print('x =', x)
-    print('y =', y)
-
-
-
-
-
-
-
-
-
+    unittest.main()
