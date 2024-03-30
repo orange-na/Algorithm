@@ -1,27 +1,54 @@
-from typing import List
+import sys
+from typing import List, Tuple
+
+
+def fermat_last_theorem_v1(max_num: int, square_num: int) -> List[Tuple[int, int, int]]:
+    result = []
+    if square_num < 2:
+        return result
+
+    max_z = int(pow((max_num - 1) ** 2 + max_num ** 2, 1.0 / square_num))
+    for x in range(1, max_num + 1):
+        for y in range(x+1, max_num + 1):
+            for z in range(y+1, max_z):
+                if pow(x, square_num) + pow(y, square_num) == pow(z, square_num):
+                    result.append((x, y, z))
+    return result
 
 
 
-def generate_pascal_triangle(depth: int) -> List[List[int]]:
-    data = [[1] * (i + 1) for i in range(depth)]
-    for line in range(2, depth):
-        for i in range(1, line):
-            data[line][i] = data[line-1][i-1] + data[line-1][i]
-    return data
+def fermat_last_theorem_v2(max_num: int, square_num: int) -> List[Tuple[int, int, int]]:
+    result = []
+    if square_num < 2:
+        return result
 
+    for x in range(1, max_num + 1):
+        for y in range(x+1, max_num + 1):
+            pow_sum = pow(x, square_num) + pow(y, square_num)
 
+            if pow_sum > sys.maxsize:
+                raise ValueError(x, y, z, square_num, pow_sum)
 
+            z = pow(pow_sum, 1.0 / square_num)
+            if not z.is_integer():
+                continue
 
-def print_pascal(data: List[int]) -> None:
-    max_digit = len(str(max(data[-1])))
-    width = max_digit + (max_digit % 2) + 2
-    for index, line in enumerate(data):
-        numbers = ''.join([str(i).center(width, ' ') for i in line])
-        print((' ' * int(width/2)) * (len(data) - index), numbers)
-
-
+            z = int(z)
+            z_pow = pow(z, square_num)
+            if z_pow == pow_sum:
+                result.append((x, y, z))
+    return result
 
 
 
 if __name__ == '__main__':
-    print_pascal(generate_pascal_triangle(10))
+    import time
+
+    for n in range(2, 10):
+        start = time.time()
+        print('v1', fermat_last_theorem_v1(20, n))
+        print('v1', 'time =', time.time() - start)
+
+        start = time.time()
+        print('v2', fermat_last_theorem_v2(20, n))
+        print('v2', 'time =', time.time() - start)
