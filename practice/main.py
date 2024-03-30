@@ -1,109 +1,95 @@
-
-from typing import List, NewType
-
-
-PhoneAlphabet = NewType('PhoneAlphabet', str)
-
-# NUM_ALPHABET_MAPPING = {
-#     0: PhoneAlphabet('+'),
-#     1: PhoneAlphabet('@'),
-#     2: PhoneAlphabet('ABC'),
-#     3: PhoneAlphabet('DEF'),
-#     4: PhoneAlphabet('GHI'),
-#     5: PhoneAlphabet('JKL'),
-#     6: PhoneAlphabet('MNO'),
-#     7: PhoneAlphabet('PQRS'),
-#     8: PhoneAlphabet('TUV'),
-#     9: PhoneAlphabet('WXYZ')
-# }
-
-NUM_ALPHABET_MAPPING = {
-    0: '+',
-    1: '@',
-    2: 'ABC',
-    3: 'DEF',
-    4: 'GHI',
-    5: 'JKL',
-    6: 'MNO',
-    7: 'PQRS',
-    8: 'TUV',
-    9: 'WXYZ'
-}
-
-def phone_mnemonic_v1(phone_number: str) -> List[str]:
-    phone_number = [int(s) for s in phone_number.replace('-', '')]
-    candidate = []
-    tmp= [''] * len(phone_number)
-
-    def find_candidate_alphabet(digit: int = 0) -> None:
-        if digit == len(phone_number):
-            candidate.append(''.join(tmp))
-        else:
-            for char in NUM_ALPHABET_MAPPING[phone_number[digit]]:
-                tmp[digit] = char
-                find_candidate_alphabet(digit+1)
-
-    find_candidate_alphabet()
-    return candidate
+import math
 
 
-# def phone_mnemonic_v1(phone_number: str) -> List[str]:
-#     phone_number: List[int] = [int(s) for s in phone_number.replace('-', '')]
-#     candidate: List[PhoneAlphabet] = []
-#     tmp: List[PhoneAlphabet] = [PhoneAlphabet('')] * len(phone_number)
-#
-#     def find_candidate_alphabet(digit: int = 0) -> None:
-#         if digit == len(phone_number):
-#             candidate.append(''.join(tmp))
-#         else:
-#             for char in NUM_ALPHABET_MAPPING[phone_number[digit]]:
-#                 tmp[digit] = char
-#                 find_candidate_alphabet(digit+1)
-#
-#     find_candidate_alphabet()
-#     return candidate
+def is_prime_v1(num: int) -> bool:
+    if num <= 1:
+        return False
+
+    for i in range(2, num):
+        if num % i == 0:
+            return False
+
+    return True
 
 
-def phone_mnemonic_v2(phone_number: str) -> List[str]:
-    phone_number = [int(s) for s in phone_number.replace('-', '')]
-    candidate = []
-    stack = ['']
+def is_prime_v2(num: int) -> bool:
+    if num <= 1:
+        return False
+    i = 2
+    while i * i <= num:
+        if num % i == 0:
+            return False
+        i += 1
 
-    while len(stack) != 0:
-        alphabets = stack.pop()
-        if len(alphabets) == len(phone_number):
-            candidate.append(alphabets)
-        else:
-            for char in NUM_ALPHABET_MAPPING[phone_number[len(alphabets)]]:
-                stack.append(alphabets + char)
-    return candidate
+    return True
 
 
-# def phone_mnemonic_v2(phone_number: str) -> List[str]:
-#     phone_number: List[int] = [int(s) for s in phone_number.replace('-', '')]
-#     candidate: List[PhoneAlphabet] = []
-#     stack: List[PhoneAlphabet] = [PhoneAlphabet('')]
-#
-#     while len(stack) != 0:
-#         alphabets = stack.pop()
-#         if len(alphabets) == len(phone_number):
-#             candidate.append(alphabets)
-#         else:
-#             for char in NUM_ALPHABET_MAPPING[phone_number[len(alphabets)]]:
-#                 stack.append(PhoneAlphabet(alphabets + char))
-#     return candidate
+def is_prime_v3(num: int) -> bool:
+    if num <= 1:
+        return False
+
+    if num == 2:
+        return True
+
+    if num % 2 == 0:
+        return False
+
+    # for i in range(3, math.floor(math.sqrt(num) + 1), 2):
+    #     if num % i == 0:
+    #         return False
+
+    i = 3
+    while i * i <= num:
+        if num % i == 0:
+            return False
+        i += 2
+
+    return True
+
+
+def is_prime_v4(num: int) -> bool:
+    if num <= 1:
+        return False
+
+    if num <= 3:
+        return True
+
+    if num % 2 == 0 or num % 3 == 0:
+        return False
+
+
+
+    i = 5
+    while i * i <= num:
+        if num % i == 0 or num % (i+2) == 0:
+            return False
+        i += 6
+
+    return True
 
 
 if __name__ == '__main__':
-    for s in phone_mnemonic_v2('23'):
-            print(s)
+    import time
+    import random
 
-    for s in phone_mnemonic_v1('568-379-8466'):
-        if 'LOVEPYTHON' in s:
-            print(s)
+    numbers = [random.randint(0, 1000) for _ in range(100000)]
 
-    for s in phone_mnemonic_v2('568-379-8466'):
-        if 'LOVEPYTHON' in s:
-            print(s)
+    start = time.time()
+    for num in numbers:
+        is_prime_v1(num)
+    print('v1', time.time() - start)
 
+    start = time.time()
+    for num in numbers:
+        is_prime_v2(num)
+    print('v2', time.time() - start)
 
+    start = time.time()
+    for num in numbers:
+        is_prime_v3(num)
+    print('v3', time.time() - start)
+
+    start = time.time()
+    for num in numbers:
+        is_prime_v4(num)
+    print('v4', time.time() - start)
