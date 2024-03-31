@@ -1,51 +1,77 @@
-"""
-[1] => [2] => 2
-[2, 3] => [2, 4] => 24
-[8, 9] => [9, 0] => 90
-[9, 9] => [1, 0, 0] => 100
-[1, 2, 3] => [1, 2, 4] => 124
-[7, 8, 9] => [7, 9, 0] => 790
-[9, 9, 9] => [1, 0, 0, 0] => 1000
-[9, 9, 9, 9] => [1, 0, 0, 0, 0] => 10000
-[0, 0, 0, 9, 9, 9, 9] => [1, 0, 0, 0, 0] => 10000
-
-Can not convert to string such as 
-l = [1, 2, 3]
-print(int(''.join([str(i) for i in l])) + 1)
-"""
-
-def remove_zero(numbers: list[int]) -> int:
-    if numbers and numbers[0] == 0:
-        numbers.pop(0)
-        remove_zero(numbers)
-
-def list_to_int(numbers: list[int]) -> int:
-    sum_numbers = 0
-    for i, num in enumerate(reversed(numbers)):
-        sum_numbers += num * (10**i)
-    return sum_numbers
 
 
-def list_plus_one(numbers: list[int]) -> int:
-    i = len(numbers) - 1
-    numbers[i] += 1
-    while 0 < i:
-        if numbers[i] != 10:
-            remove_zero(numbers)
-            break
+def snake_string(chars: str) ->list[list[str]]:
+    results = [[],[],[]]
+    results_index = {0,1,2}
+    insert_index = 1
+    for i, char in enumerate(chars):
+        if i % 4 == 1:
+            insert_index = 0
+        elif i % 2 == 0:
+            insert_index = 1
+        elif i % 4 == 3:
+            insert_index = 2
+        results[insert_index].append(char)
+        for rest_index in results_index - {insert_index}:
+            results[rest_index].append(" ")
+    return results
 
-        numbers[i] = 0
-        numbers[i - 1] += 1
-        i -= 1
-    else:
-        if numbers[0] == 10:
-            numbers[0] = 1
-            numbers.append(0)
+
+
+# def snake_string2(chars: str, depth: int) -> list[list[str]]:
+#     results = [[] for _ in range(depth)]
+#     results_index = { i for i in range(depth)}
+#     insert_index = int(depth / 2)
+
+#     def pos(i):
+#         return i + 1
     
-    return list_to_int(numbers)
-        
+#     def neg(i):
+#         return i - 1
+    
+#     op = neg
+
+#     for char in chars:
+#         results[insert_index].append(char)
+#         for rest_index in results_index - {insert_index}:
+#             results[rest_index].append(' ')
+#         if insert_index <= 0:
+#             op = pos
+#         if insert_index >= depth - 1:
+#             op = neg
+#         insert_index = op(insert_index)
+#     return results
+
+def snake_string2(chars: str, depth: int) -> list[list[str]]:
+    results = [[] for _ in range(depth)]
+    results_index = { i for i in range(depth)}
+    insert_index = int(depth / 2)
+
+    def pos(i):
+        return i + 1
+    
+    def neg(i):
+        return i - 1
+    
+    op = neg
+
+    for char in chars:
+        results[insert_index].append(char)
+        for rest_index in results_index - {insert_index}:
+            results[rest_index].append(' ')
+        if insert_index <= 0:
+                op = pos
+        if insert_index >= depth - 1:
+                op = neg
+        insert_index = op(insert_index)
+    return results
+
+import string
+
+if __name__ == '__main__':
+    alphabet = [s for _ in range(2) for s in string.ascii_lowercase]
+    strings = ''.join(alphabet)
+    for line in snake_string2(strings, 8):
+        print(''.join(line))
 
 
-
-if __name__ == "__main__":
-    print(list_plus_one([9,9,9,9]))
