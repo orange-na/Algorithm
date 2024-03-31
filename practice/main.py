@@ -1,54 +1,51 @@
-import sys
-from typing import List, Tuple
+"""
+[1] => [2] => 2
+[2, 3] => [2, 4] => 24
+[8, 9] => [9, 0] => 90
+[9, 9] => [1, 0, 0] => 100
+[1, 2, 3] => [1, 2, 4] => 124
+[7, 8, 9] => [7, 9, 0] => 790
+[9, 9, 9] => [1, 0, 0, 0] => 1000
+[9, 9, 9, 9] => [1, 0, 0, 0, 0] => 10000
+[0, 0, 0, 9, 9, 9, 9] => [1, 0, 0, 0, 0] => 10000
+
+Can not convert to string such as 
+l = [1, 2, 3]
+print(int(''.join([str(i) for i in l])) + 1)
+"""
+
+def remove_zero(numbers: list[int]) -> int:
+    if numbers and numbers[0] == 0:
+        numbers.pop(0)
+        remove_zero(numbers)
+
+def list_to_int(numbers: list[int]) -> int:
+    sum_numbers = 0
+    for i, num in enumerate(reversed(numbers)):
+        sum_numbers += num * (10**i)
+    return sum_numbers
 
 
-def fermat_last_theorem_v1(max_num: int, square_num: int) -> List[Tuple[int, int, int]]:
-    result = []
-    if square_num < 2:
-        return result
+def list_plus_one(numbers: list[int]) -> int:
+    i = len(numbers) - 1
+    numbers[i] += 1
+    while 0 < i:
+        if numbers[i] != 10:
+            remove_zero(numbers)
+            break
 
-    max_z = int(pow((max_num - 1) ** 2 + max_num ** 2, 1.0 / square_num))
-    for x in range(1, max_num + 1):
-        for y in range(x+1, max_num + 1):
-            for z in range(y+1, max_z):
-                if pow(x, square_num) + pow(y, square_num) == pow(z, square_num):
-                    result.append((x, y, z))
-    return result
-
-
-
-def fermat_last_theorem_v2(max_num: int, square_num: int) -> List[Tuple[int, int, int]]:
-    result = []
-    if square_num < 2:
-        return result
-
-    for x in range(1, max_num + 1):
-        for y in range(x+1, max_num + 1):
-            pow_sum = pow(x, square_num) + pow(y, square_num)
-
-            if pow_sum > sys.maxsize:
-                raise ValueError(x, y, z, square_num, pow_sum)
-
-            z = pow(pow_sum, 1.0 / square_num)
-            if not z.is_integer():
-                continue
-
-            z = int(z)
-            z_pow = pow(z, square_num)
-            if z_pow == pow_sum:
-                result.append((x, y, z))
-    return result
+        numbers[i] = 0
+        numbers[i - 1] += 1
+        i -= 1
+    else:
+        if numbers[0] == 10:
+            numbers[0] = 1
+            numbers.append(0)
+    
+    return list_to_int(numbers)
+        
 
 
 
-if __name__ == '__main__':
-    import time
-
-    for n in range(2, 10):
-        start = time.time()
-        print('v1', fermat_last_theorem_v1(20, n))
-        print('v1', 'time =', time.time() - start)
-
-        start = time.time()
-        print('v2', fermat_last_theorem_v2(20, n))
-        print('v2', 'time =', time.time() - start)
+if __name__ == "__main__":
+    print(list_plus_one([9,9,9,9]))
