@@ -3,10 +3,11 @@ from collections import Counter
 import string
 from itertools import permutations
 from collections import defaultdict
+import operator
 
 arr = [1, 2, 3, 1, 1, 2, 7,2]
 arr.append(55)
-arr.pop()
+print(arr.pop())
 print(arr)
 
 arr2 = ['a', 'b', 'c']
@@ -48,6 +49,8 @@ q = [0 for _ in range(N)]
 print(q)
 
 pairs = [(1, 10), (1, 5), (1, 1)]
+max_pairs = max(pairs, key=operator.itemgetter(1))
+print('max_pairs', max_pairs)
 pairs = sorted(pairs)  # タプルの最初の要素でソートされる
 print(pairs)
 
@@ -73,9 +76,33 @@ tmp = [[0]] * 5
 tmp[0] = 1
 print(tmp)
 
-aa = {1: 2, 3: 4}
-print(aa.get(3))
 
 text = "Python"
 formatted_text = text.center(10, '*')
 print(formatted_text)
+
+sum_num = 36
+harf_sum, reminder = divmod(sum_num, 2)
+print(harf_sum, reminder)
+
+aa = {1: 'a', 2: 'b'}
+print(aa.get(1))
+print(aa.keys())
+print(aa.values())
+print(aa.items())
+
+
+# テキストサイズ　メソッド
+apple = 'This is a pen. This is an apple. Applepen.'
+print(apple.upper())
+print(apple.lower())
+print(apple.isspace())
+count_a =  ('a', apple.count('a'))
+print(count_a)
+
+f = operator.itemgetter(0) # 関数である
+print(f((3,'a')))
+
+mapping_from = string.ascii_lowercase
+mapping_to = string.ascii_lowercase
+print(strings.translate(str.maketrans(mapping_from, mapping_to)))
