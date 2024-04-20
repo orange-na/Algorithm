@@ -106,3 +106,23 @@ print(f((3,'a')))
 mapping_from = string.ascii_lowercase
 mapping_to = string.ascii_lowercase
 print(strings.translate(str.maketrans(mapping_from, mapping_to)))
+
+ss = str.maketrans(mapping_from, mapping_to)
+print(11,ss)
+
+aaa = (1, 2)
+print(aaa[1])
+
+from functools import cache
+
+@cache
+def fib(n):
+    if n <= 1:
+        return n
+    return fib(n-1) + fib(n-2)
+
+print(fib(10))
+
+fruits = ['apple', 'banana', 'mango']
+for i, fruit in enumerate(fruits):
+    print(f"Index: {i}, Fruit: {fruit}")
