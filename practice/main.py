@@ -1,52 +1,43 @@
-import operator
-from typing import List
+from typing import Generator
 
 
-def snake_string_v1(chars: str) -> List[List[str]]:
-    result = [[], [], []]
-    result_indexes = {0, 1, 2}
-    insert_index = 1
-    for i, s in enumerate(chars):
-        if i % 4 == 1:
-            insert_index = 0
-        elif i % 2 == 0:
-            insert_index = 1
-        elif i % 4 == 3:
-            insert_index = 2
-        result[insert_index].append(s)
-        for rest_index in result_indexes - {insert_index}:
-            result[rest_index].append(' ')
-    return result
+def is_palindrome(strings: str) -> bool:
+    len_strings = len(strings)
+    if not len_strings:
+        return False
+    if len_strings == 1:
+        return True
+
+    start, end = 0, len_strings - 1
+    while start < end:
+        if strings[start] != strings[end]:
+            return False
+        start += 1
+        end -= 1
+    return True
 
 
-def snake_string_v2(chars: str, depth: int) -> List[List[str]]:
-    result = [[] for _ in range(depth)]
-    result_indexes = {i for i in range(depth)}
-    insert_index = int(depth / 2)
+def find_palindrome(strings: str, left: int, right: int) -> Generator[str, None, None]:
+    while 0 <= left and right <= len(strings) - 1:
+        if strings[left] != strings[right]:
+            break
+        yield strings[left: right+1]
+        left -= 1
+        right += 1
 
-    op = operator.neg
-    for s in chars:
-        result[insert_index].append(s)
-        for rest_index in result_indexes - {insert_index}:
-            result[rest_index].append(' ')
-        if insert_index <= 0:
-            op = operator.pos
-        if insert_index >= depth - 1:
-            op = operator.neg
-        insert_index += op(1)
 
-    return result
+def find_all_palindrome(strings: str) -> Generator[str, None, None]:
+    len_strings = len(strings)
+    if not len_strings:
+        yield
+    if len_strings == 1:
+        yield strings
+
+    for i in range(1, len_strings-1):
+        yield from find_palindrome(strings, i-1, i+1)
+        yield from find_palindrome(strings, i-1, i)
 
 
 if __name__ == '__main__':
-    # numbers = [str(i) for j in range(5) for i in range(10)]
-    # strings = ''.join(numbers)
-    # for line in snake_string_v1(strings):
-    #     print(''.join(line))
-
-    import string
-    alphabet = [s for _ in range(2) for s in string.ascii_lowercase]
-    strings = ''.join(alphabet)
-    for line in snake_string_v2(strings, 10):
-        print(''.join(line))
-
+    for s in find_all_palindrome('fdafiewaafcabacdfafdaf'):
+        print(s)
