@@ -1,43 +1,52 @@
-from typing import Generator
+import sys
+from typing import List, Tuple
 
 
-def is_palindrome(strings: str) -> bool:
-    len_strings = len(strings)
-    if not len_strings:
-        return False
-    if len_strings == 1:
-        return True
+def fermat_last_theorem_v1(max_num: int, square_num: int) -> List[Tuple[int, int, int]]:
+    result = []
+    if square_num < 2:
+        return result
 
-    start, end = 0, len_strings - 1
-    while start < end:
-        if strings[start] != strings[end]:
-            return False
-        start += 1
-        end -= 1
-    return True
+    max_z = int(pow((max_num - 1) ** 2 + max_num ** 2, 1.0 / square_num))
+    for x in range(1, max_num + 1):
+        for y in range(x+1, max_num + 1):
+            for z in range(y+1, max_z):
+                if pow(x, square_num) + pow(y, square_num) == pow(z, square_num):
+                    result.append((x, y, z))
+    return result
 
 
-def find_palindrome(strings: str, left: int, right: int) -> Generator[str, None, None]:
-    while 0 <= left and right <= len(strings) - 1:
-        if strings[left] != strings[right]:
-            break
-        yield strings[left: right+1]
-        left -= 1
-        right += 1
+def fermat_last_theorem_v2(max_num: int, square_num: int) -> List[Tuple[int, int, int]]:
+    result = []
+    if square_num < 2:
+        return result
 
+    for x in range(1, max_num + 1):
+        for y in range(x+1, max_num + 1):
+            pow_sum = pow(x, square_num) + pow(y, square_num)
 
-def find_all_palindrome(strings: str) -> Generator[str, None, None]:
-    len_strings = len(strings)
-    if not len_strings:
-        yield
-    if len_strings == 1:
-        yield strings
+            if pow_sum > sys.maxsize:
+                raise ValueError(x, y, z, square_num, pow_sum)
 
-    for i in range(1, len_strings-1):
-        yield from find_palindrome(strings, i-1, i+1)
-        yield from find_palindrome(strings, i-1, i)
+            z = pow(pow_sum, 1.0 / square_num)
+            if not z.is_integer():
+                continue
+
+            z = int(z)
+            z_pow = pow(z, square_num)
+            if z_pow == pow_sum:
+                result.append((x, y, z))
+    return result
 
 
 if __name__ == '__main__':
-    for s in find_all_palindrome('fdafiewaafcabacdfafdaf'):
-        print(s)
+    import time
+
+    for n in range(2, 10):
+        start = time.time()
+        print('v1', fermat_last_theorem_v1(20, n))
+        print('v1', 'time =', time.time() - start)
+
+        start = time.time()
+        print('v2', fermat_last_theorem_v2(20, n))
+        print('v2', 'time =', time.time() - start)
