@@ -1,52 +1,41 @@
-import sys
-from typing import List, Tuple
+import string
 
 
-def fermat_last_theorem_v1(max_num: int, square_num: int) -> List[Tuple[int, int, int]]:
-    result = []
-    if square_num < 2:
-        return result
+ALPHABET = string.ascii_uppercase
 
-    max_z = int(pow((max_num - 1) ** 2 + max_num ** 2, 1.0 / square_num))
-    for x in range(1, max_num + 1):
-        for y in range(x+1, max_num + 1):
-            for z in range(y+1, max_z):
-                if pow(x, square_num) + pow(y, square_num) == pow(z, square_num):
-                    result.append((x, y, z))
+
+def generate_key(message: str, keyword: str) -> str:
+    key = keyword
+    remain_length = len(message) - len(keyword)
+    for i in range(remain_length):
+        key += key[i]
+    return key
+
+
+def encrypt(message: str, key: str) -> str:
+    result = ''
+    for i, char in enumerate(message):
+        if char not in ALPHABET:
+            result += char
+            continue
+
+        # index = (ALPHABET.index(char) + ALPHABET.index(key[i])) % len(ALPHABET)
+        # result += ALPHABET[index]
+        result += chr((ord(char) + ord(key[i])) % len(ALPHABET) + ord('A'))
+
     return result
 
 
-def fermat_last_theorem_v2(max_num: int, square_num: int) -> List[Tuple[int, int, int]]:
-    result = []
-    if square_num < 2:
-        return result
+def decrypt(cipher_text: str, key: str) -> str:
+    result = ''
+    for i, char in enumerate(cipher_text):
+        if char not in ALPHABET:
+            result += char
+            continue
 
-    for x in range(1, max_num + 1):
-        for y in range(x+1, max_num + 1):
-            pow_sum = pow(x, square_num) + pow(y, square_num)
+        # index = (ALPHABET.index(char) - ALPHABET.index(key[i]) + len(ALPHABET)) % len(ALPHABET)
+        # result += ALPHABET[index]
+        result += chr(
+            (ord(char) - ord(key[i]) + len(ALPHABET)) % len(ALPHABET) + ord('A'))
 
-            if pow_sum > sys.maxsize:
-                raise ValueError(x, y, z, square_num, pow_sum)
-
-            z = pow(pow_sum, 1.0 / square_num)
-            if not z.is_integer():
-                continue
-
-            z = int(z)
-            z_pow = pow(z, square_num)
-            if z_pow == pow_sum:
-                result.append((x, y, z))
     return result
-
-
-if __name__ == '__main__':
-    import time
-
-    for n in range(2, 10):
-        start = time.time()
-        print('v1', fermat_last_theorem_v1(20, n))
-        print('v1', 'time =', time.time() - start)
-
-        start = time.time()
-        print('v2', fermat_last_theorem_v2(20, n))
-        print('v2', 'time =', time.time() - start)
