@@ -1,103 +1,112 @@
-import string
-from typing import List
+"""
+Input 568-379-8466 Output [..., 'LOVEPYTHON', ... ]
+Input 435-569-6753 Output [..., 'HELLOWORLD', ...]
+"""
+from typing import List, NewType
 
 
-ALPHABET = string.ascii_uppercase
+PhoneAlphabet = NewType('PhoneAlphabet', str)
+
+# NUM_ALPHABET_MAPPING = {
+#     0: PhoneAlphabet('+'),
+#     1: PhoneAlphabet('@'),
+#     2: PhoneAlphabet('ABC'),
+#     3: PhoneAlphabet('DEF'),
+#     4: PhoneAlphabet('GHI'),
+#     5: PhoneAlphabet('JKL'),
+#     6: PhoneAlphabet('MNO'),
+#     7: PhoneAlphabet('PQRS'),
+#     8: PhoneAlphabet('TUV'),
+#     9: PhoneAlphabet('WXYZ')
+# }
+
+NUM_ALPHABET_MAPPING = {
+    0: '+',
+    1: '@',
+    2: 'ABC',
+    3: 'DEF',
+    4: 'GHI',
+    5: 'JKL',
+    6: 'MNO',
+    7: 'PQRS',
+    8: 'TUV',
+    9: 'WXYZ'
+}
+
+def phone_mnemonic_v1(phone_number: str) -> List[str]:
+    phone_number = [int(s) for s in phone_number.replace('-', '')]
+    candidate = []
+    tmp= [''] * len(phone_number)
+
+    def find_candidate_alphabet(digit: int = 0) -> None:
+        if digit == len(phone_number):
+            candidate.append(''.join(tmp))
+        else:
+            for char in NUM_ALPHABET_MAPPING[phone_number[digit]]:
+                tmp[digit] = char
+                find_candidate_alphabet(digit+1)
+
+    find_candidate_alphabet()
+    return candidate
 
 
-class PlugBoard(object):
-
-    def __init__(self, map_alphabet: str) -> None:
-        self.alphabet = ALPHABET
-        self.forward_map = {}
-        self.backward_map = {}
-        self.mapping(map_alphabet)
-
-    def mapping(self, map_alphabet: str) -> None:
-        self.forward_map = dict(zip(self.alphabet, map_alphabet))
-        self.backward_map = {v: k for k, v in self.forward_map.items()}
-
-    def forward(self, index_num: int) -> int:
-        char = self.alphabet[index_num]
-        char = self.forward_map[char]
-        return self.alphabet.index(char)
-
-    def backward(self, index_num: int) -> int:
-        char = self.alphabet[index_num]
-        char = self.backward_map[char]
-        return self.alphabet.index(char)
+# def phone_mnemonic_v1(phone_number: str) -> List[str]:
+#     phone_number: List[int] = [int(s) for s in phone_number.replace('-', '')]
+#     candidate: List[PhoneAlphabet] = []
+#     tmp: List[PhoneAlphabet] = [PhoneAlphabet('')] * len(phone_number)
+#
+#     def find_candidate_alphabet(digit: int = 0) -> None:
+#         if digit == len(phone_number):
+#             candidate.append(''.join(tmp))
+#         else:
+#             for char in NUM_ALPHABET_MAPPING[phone_number[digit]]:
+#                 tmp[digit] = char
+#                 find_candidate_alphabet(digit+1)
+#
+#     find_candidate_alphabet()
+#     return candidate
 
 
-class Rotor(PlugBoard):
+def phone_mnemonic_v2(phone_number: str) -> List[str]:
+    phone_number = [int(s) for s in phone_number.replace('-', '')]
+    candidate = []
+    stack = ['']
 
-    def __init__(self, map_alphabet: str, offset: int = 1) -> None:
-        super().__init__(map_alphabet)
-        self.offset = offset
-        self.rotations = 0
-
-    def rotate(self, offset: int =None) -> int:
-        if offset is None:
-            offset = self.offset
-        self.alphabet = self.alphabet[offset:] + self.alphabet[:offset]
-        self.rotations += offset
-        return self.rotations
-
-    def reset(self) -> None:
-        self.rotations = 0
-        self.alphabet = ALPHABET
+    while len(stack) != 0:
+        alphabets = stack.pop()
+        if len(alphabets) == len(phone_number):
+            candidate.append(alphabets)
+        else:
+            for char in NUM_ALPHABET_MAPPING[phone_number[len(alphabets)]]:
+                stack.append(alphabets + char)
+    return candidate
 
 
-class Reflector(object):
+# def phone_mnemonic_v2(phone_number: str) -> List[str]:
+#     phone_number: List[int] = [int(s) for s in phone_number.replace('-', '')]
+#     candidate: List[PhoneAlphabet] = []
+#     stack: List[PhoneAlphabet] = [PhoneAlphabet('')]
+#
+#     while len(stack) != 0:
+#         alphabets = stack.pop()
+#         if len(alphabets) == len(phone_number):
+#             candidate.append(alphabets)
+#         else:
+#             for char in NUM_ALPHABET_MAPPING[phone_number[len(alphabets)]]:
+#                 stack.append(PhoneAlphabet(alphabets + char))
+#     return candidate
 
-    def __init__(self, map_alphabet: str) -> None:
-        self.map = dict(zip(ALPHABET, map_alphabet))
-        for x, y in self.map.items():
-            if x != self.map[y]:
-                raise ValueError(x, y)
 
-    def reflect(self, index_num: int) -> int:
-        reflected_char = self.map[ALPHABET[index_num]]
-        return ALPHABET.index(reflected_char)
+if __name__ == '__main__':
+    for s in phone_mnemonic_v2('23'):
+            print(s)
+
+    for s in phone_mnemonic_v1('568-379-8466'):
+        if 'LOVEPYTHON' in s:
+            print(s)
+
+    for s in phone_mnemonic_v2('568-379-8466'):
+        if 'LOVEPYTHON' in s:
+            print(s)
 
 
-class EnigmaMachine(object):
-
-    def __init__(self, plug_board: PlugBoard, rotors: List[Rotor], reflector: Reflector) -> None:
-        self.plug_board = plug_board
-        self.rotors = rotors
-        self.reflector = reflector
-
-    def encrypt(self, text: str) -> str:
-        return ''.join([self.go_through(c) for c in list(text)])
-
-    def decrypt(self, text: str) -> str:
-        for rotor in self.rotors:
-            rotor.reset()
-
-        return ''.join([self.go_through(c) for c in list(text)])
-
-    def go_through(self, char: str) -> str:
-        char = char.upper()
-        if char not in ALPHABET:
-            return char
-
-        index_num = ALPHABET.index(char)
-        index_num = self.plug_board.forward(index_num)
-
-        for rotor in self.rotors:
-            index_num = rotor.forward(index_num)
-
-        index_num = self.reflector.reflect(index_num)
-
-        for rotor in reversed(self.rotors):
-            index_num = rotor.backward(index_num)
-
-        index_num = self.plug_board.backward(index_num)
-
-        char = ALPHABET[index_num]
-
-        for rotor in reversed(self.rotors):
-            if rotor.rotate() % len(ALPHABET) != 0:
-                break
-
-        return char
