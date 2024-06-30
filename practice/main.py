@@ -1,57 +1,56 @@
-""" Generate Prime Numbers
-Input: 50 => Output: [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47]
 """
-from typing import List, Generator
+Input 5, 20
+Output
+[[7], [6, 3], [6, 0, 15], [4, 20, 1, 8], [6, 4, 4, 1, 0]]
+            7
+          6   3
+        6   0   15
+      4   20  1   8
+    6   4   4   1   0
+min path = 12
+"""
+from typing import List, Optional
+import random
 
 
-def generate_primes_v1(number: int) -> List[int]:
-    primes = []
-    for x in range(2, number + 1):
-        for y in range(2, x):
-            if x % y == 0:
-                break
-        else:
-            primes.append(x)
-    return primes
+def generate_triangle_list(depth: int, max_num: int) -> List[List[int]]:
+    return [[random.randint(0, max_num) for _ in range(i)] for i in range(1, depth+1)]
 
 
-def generate_primes_v2(number: int) -> List[int]:
-    primes = []
-    cache = {}
-    for x in range(2, number + 1):
-        is_prime = cache.get(x)
-        if is_prime is False:
-            continue
-        primes.append(x)
-        cache[x] = True
-        for y in range(x*2, number+1, x):
-            cache[y] = False
-    return primes
+def print_triangle(data: List[List[int]]) -> None:
+    max_digit = len(str(max([max(l) for l in data])))
+    width = max_digit + (max_digit % 2) + 2
+    for index, line in enumerate(data):
+        numbers = ''.join([str(i).center(width, ' ') for i in line])
+        print(' ' * int(width/2) * (len(data) - index), numbers)
 
 
-def generate_primes_v3(number: int) -> Generator[int, None, None]:
-    cache = {}
-    for x in range(2, number + 1):
-        is_prime = cache.get(x)
-        if is_prime is False:
-            continue
-        yield x
-        cache[x] = True
-        for y in range(x*2, number+1, x):
-            cache[y] = False
+def sum_min_path(triangle: List[List[int]]) -> Optional[int]:
+    tree_sum = triangle[:]
+    j, len_triangle = 1, len(triangle)
+    if not len_triangle:
+        return
+
+    while j < len_triangle:
+        line = triangle[j]
+        line_path_sum = []
+        for i, value in enumerate(line):
+            if i == 0:
+                sum_value = line[i] + tree_sum[j-1][0]
+            elif i == len(line) - 1:
+                sum_value = line[i] + tree_sum[j-1][i-1]
+            else:
+                min_path = min(tree_sum[j-1][i-1], tree_sum[j-1][i])
+                sum_value = line[i] + min_path
+            line_path_sum.append(sum_value)
+        tree_sum[j] = line_path_sum
+        j += 1
+    return min(tree_sum[-1])
 
 
 if __name__ == '__main__':
-    import time
-    start = time.time()
-    print(generate_primes_v1(50))
-    print(time.time() - start)
-
-    start = time.time()
-    print(generate_primes_v2(50))
-    print(time.time() - start)
-
-    start = time.time()
-    print([i for i in generate_primes_v3(50)])
-    print(time.time() - start)
+    data = generate_triangle_list(5, 9)
+    print(data)
+    print_triangle(data)
+    print('min path =', sum_min_path(data))
 
